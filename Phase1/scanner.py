@@ -21,7 +21,18 @@ delimiters = {
     ";": "SEMICOLON", ",": "COMMA", ".": "DOT"
 }
 
-source = open(sys.argv[1]).read()  # Reads the complete source file.
+# Keeps character classification explicit and ASCII-only.
+def is_letter(character):
+    return ("a" <= character <= "z") or ("A" <= character <= "Z") or character == "_"
+
+def is_digit(character):
+    return "0" <= character <= "9"
+
+def is_identifier_character(character):
+    return is_letter(character) or is_digit(character)
+
+with open(sys.argv[1]) as source_file:
+    source = source_file.read()  # Reads the complete source file.
 tokens = []  # Stores recognized lexemes and token names in order.
 symbols = []  # Stores each identifier's first location.
 symbol_names = set()  # Prevents duplicate symbol-table entries.
@@ -96,11 +107,11 @@ while pos < len(source):
         continue
 
     # Scans identifiers, keywords, and boolean literals.
-    if ("a" <= character <= "z") or ("A" <= character <= "Z") or character == "_":
+    if is_letter(character):
         begin = pos  # Saves the first character of the word.
         while pos < len(source):
             current = source[pos]
-            if not (("a" <= current <= "z") or ("A" <= current <= "Z") or ("0" <= current <= "9") or current == "_"):
+            if not is_identifier_character(current):
                 break
             advance()
         lexeme = source[begin:pos]  # Extracts the complete word.
@@ -113,23 +124,23 @@ while pos < len(source):
         continue
 
     # Scans integer and decimal number literals.
-    if "0" <= character <= "9":
+    if is_digit(character):
         begin = pos  # Saves the first digit.
-        while pos < len(source) and "0" <= source[pos] <= "9":
+        while pos < len(source) and is_digit(source[pos]):
             advance()
         # Rejects a digit run immediately followed by identifier characters.
-        if pos < len(source) and (("a" <= source[pos] <= "z") or ("A" <= source[pos] <= "Z") or source[pos] == "_"):
+        if pos < len(source) and is_letter(source[pos]):
             while pos < len(source):
                 current = source[pos]
-                if not (("a" <= current <= "z") or ("A" <= current <= "Z") or ("0" <= current <= "9") or current == "_"):
+                if not is_identifier_character(current):
                     break
                 advance()
             errors.append("Error: invalid identifier '" + source[begin:pos] + "' at line " + str(start_line) + ", column " + str(start_column) + ".")
             continue
         # Extends the number when a dot is followed by at least one digit.
-        if pos < len(source) and source[pos] == "." and pos + 1 < len(source) and "0" <= source[pos + 1] <= "9":
+        if pos < len(source) and source[pos] == "." and pos + 1 < len(source) and is_digit(source[pos + 1]):
             advance()
-            while pos < len(source) and "0" <= source[pos] <= "9":
+            while pos < len(source) and is_digit(source[pos]):
                 advance()
         tokens.append((source[begin:pos], "NUMBER"))
         continue
