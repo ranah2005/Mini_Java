@@ -1,0 +1,20 @@
+class Student {
+ public static void main() {
+ int age = 20;
+ float grade = 85.5;
+ String name = "Ali";
+ if (grade >= 50) {
+ grade = grade + 5;
+ }
+ }
+}
+
+// Additional scanner checks
+boolean ready = true;
+char letter = 'A';
+Class upper;
+/* skipped block comment */
+int x = 10 @ 5;
+1name = 5;
+String broken = "Ali;
+/* This comment does not end

@@ -1,0 +1,16 @@
+Mini Java Lexical Analyzer - Phase 1
+
+Tokens implemented
+The scanner recognizes the required keywords, IDENTIFIER, NUMBER, STRING, BOOLEAN, MATHOP, LOGOP, ASSIGN, and all listed delimiter tokens. It preserves case sensitivity, so class is CLASS while Class is IDENTIFIER, String is STRING_TYPE, and quoted text is STRING.
+
+Implementation
+The scanner is hand-written in Python using source indexing, character comparisons, and explicit ASCII ranges for identifiers. It does not use regular expressions, tokenizer libraries, parser generators, or any ready-made lexical-analysis/parser function. The keyword, operator, and delimiter dictionaries only map already-scanned lexemes to the required token names. The advance method is a small local cursor helper that updates line and column numbers, including newline handling.
+
+Comments and errors
+Whitespace, // comments, and /* */ comments are skipped. Two-character operators are checked before one-character operators. The scanner records invalid characters, invalid identifiers beginning with a digit and followed by letters or underscores, unclosed strings, and unclosed block comments without stopping the scan. Every error includes its line and column, and identifiers are entered in the symbol table only at their first occurrence.
+
+Challenges and solutions
+The main challenges were maintaining accurate 1-based positions while skipping comments and handling newlines inside strings, and ensuring >=, <=, ==, and != are emitted as single tokens. These were handled by routing cursor movement through one advance method and checking two-character operators before single-character operators. A set prevents duplicate symbol-table entries while a list preserves first-appearance order.
+
+Test input
+The accompanying test_input.txt contains the required sample program plus checks for booleans, character strings, case sensitivity, comments, an invalid character, an invalid identifier, an unclosed string, and an unclosed comment.
